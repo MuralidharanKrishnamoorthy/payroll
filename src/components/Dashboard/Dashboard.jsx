@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Card, Upload, Button, message, Typography, Space } from 'antd';
-import { UploadOutlined, InboxOutlined, DownloadOutlined } from '@ant-design/icons';
+import { UploadOutlined, InboxOutlined, DownloadOutlined, FileTextOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Layout/Navbar';
 import uploadExcelFile from '../../services/upload.service';
 
@@ -9,6 +10,7 @@ const { Title, Paragraph } = Typography;
 const { Dragger } = Upload;
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
 
@@ -134,13 +136,26 @@ const Dashboard = () => {
       <Content className="p-6 md:p-8">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6">
             <Title level={2} className="text-gray-800 mb-2">
               Welcome to Payroll Management System
             </Title>
             <Paragraph className="text-gray-600 text-lg">
               Upload your employee payroll Excel file to get started with processing
             </Paragraph>
+          </div>
+
+          {/* Summary Button */}
+          <div className="mb-6">
+            <Button
+              type="default"
+              icon={<FileTextOutlined />}
+              onClick={() => navigate('/summary')}
+              size="large"
+              className="h-12 text-lg font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700 hover:text-blue-700"
+            >
+              View Summary
+            </Button>
           </div>
 
           {/* Main Upload Card */}

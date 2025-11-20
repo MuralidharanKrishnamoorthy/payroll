@@ -4,6 +4,8 @@ import { ConfigProvider } from 'antd';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
+import Summary from './components/Dashboard/Summary';
+import PayrollDetails from './components/Dashboard/PayrollDetails';
 import ProtectedRoute from './components/Layout/ProtectedRoute';
 import authService from './services/auth.service';
 import './App.css';
@@ -59,6 +61,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/summary"
+            element={
+              <ProtectedRoute>
+                <Summary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payroll-details/:uploadId"
+            element={
+              <ProtectedRoute>
+                <PayrollDetails />
               </ProtectedRoute>
             }
           />

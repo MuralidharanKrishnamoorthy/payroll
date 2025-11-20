@@ -87,15 +87,14 @@ const Navbar = () => {
 
         {/* Logout Button */}
         <Button
-          type="primary"
-          danger
-          icon={<LogoutOutlined style={{ fontSize: '18px' }} />}
+          icon={<LogoutOutlined style={{ fontSize: '18px', color: '#000' }} />}
           onClick={handleLogout}
           loading={loading}
           size="large"
-          className="bg-red-500 hover:bg-red-600 border-0 h-12 px-6 flex items-center gap-2"
+          className="bg-white hover:bg-red-50 border-2 border-red-500 hover:border-red-600 h-12 px-6 flex items-center gap-2"
+          style={{ color: '#000' }}
         >
-          <span className="hidden md:inline text-base font-semibold">Logout</span>
+          <span className="hidden md:inline text-base font-semibold text-black">Logout</span>
         </Button>
       </div>
     </Header>

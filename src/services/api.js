@@ -25,21 +25,23 @@ api.interceptors.request.use(
     console.log('Token in localStorage:', token ? token.substring(0, 10) + '...' : 'No token');
     console.log('Request data type:', config.data instanceof FormData ? 'FormData' : typeof config.data);
 
-    // Add Authorization header
+  
     if (token) {
-      config.headers.Authorization = `Token ${token}`;
-      console.log('Authorization header added');
+      
+      const authPrefix = token.startsWith('eyJ') ? 'Bearer' : 'Token';
+      config.headers.Authorization = `${authPrefix} ${token}`;
+      console.log(`Authorization header added with ${authPrefix} prefix`);
     } else {
       console.log('No Authorization header (no token)');
     }
 
-    // Set Content-Type based on data type
+    
     if (config.data instanceof FormData) {
-      // For FormData, don't set Content-Type - browser will set it with boundary
+      
       delete config.headers['Content-Type'];
       console.log('FormData detected - Content-Type removed (browser will set multipart/form-data with boundary)');
     } else if (!config.headers['Content-Type']) {
-      // For JSON requests, set Content-Type
+      
       config.headers['Content-Type'] = 'application/json';
       console.log('JSON request - Content-Type set to application/json');
     }
