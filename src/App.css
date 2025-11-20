@@ -1,0 +1,48 @@
+/* Global App Styles */
+.App {
+  text-align: center;
+}
+
+/* Ant Design Form customizations */
+.ant-form-item {
+  margin-bottom: 24px;
+}
+
+.ant-input-affix-wrapper {
+  padding: 10px 16px;
+}
+
+.ant-input-affix-wrapper .ant-input-prefix {
+  margin-right: 12px;
+}
+
+.ant-input::placeholder,
+.ant-input-affix-wrapper input::placeholder {
+  font-size: 15px;
+}
+
+/* Custom scrollbar for better UI */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive utilities */
+@media (max-width: 1024px) {
+  .ant-input-affix-wrapper {
+    padding: 8px 14px;
+  }
+}
