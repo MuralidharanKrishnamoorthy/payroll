@@ -6,6 +6,7 @@ import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import Summary from './components/Dashboard/Summary';
 import PayrollDetails from './components/Dashboard/PayrollDetails';
+import UserProfile from './components/Dashboard/UserProfile';
 import ProtectedRoute from './components/Layout/ProtectedRoute';
 import authService from './services/auth.service';
 import './App.css';
@@ -77,6 +78,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PayrollDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
               </ProtectedRoute>
             }
           />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Table, Button, Typography, Card, message, Space } from 'antd';
-import { EyeOutlined, ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Layout, Table, Button, Typography, Card, message, Space, Popconfirm } from 'antd';
+import { EyeOutlined, ArrowLeftOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Layout/Navbar';
 import payrollService from '../../services/payroll.service';
@@ -66,6 +66,13 @@ const Summary = () => {
     }
   };
 
+  const handleDelete = (record) => {
+    // Remove from UI (no API call)
+    const updatedUploads = uploads.filter(upload => upload.id !== record.id);
+    setUploads(updatedUploads);
+    message.success('File removed from view');
+  };
+
   const columns = [
     {
       title: 'File Name',
@@ -117,6 +124,30 @@ const Summary = () => {
         >
           Download
         </Button>
+      ),
+    },
+    {
+      title: 'Delete',
+      key: 'delete',
+      align: 'center',
+      render: (_, record) => (
+        <Popconfirm
+          title="Delete this file?"
+          description="This will remove the file from view. Are you sure?"
+          onConfirm={() => handleDelete(record)}
+          okText="Yes, Delete"
+          cancelText="Cancel"
+          okButtonProps={{ danger: true }}
+        >
+          <Button
+            type="default"
+            danger
+            icon={<DeleteOutlined />}
+            className="border-2 border-red-600 text-red-600 hover:bg-red-50"
+          >
+            Delete
+          </Button>
+        </Popconfirm>
       ),
     },
   ];

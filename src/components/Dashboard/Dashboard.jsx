@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Layout, Card, Upload, Button, message, Typography, Space } from 'antd';
-import { UploadOutlined, InboxOutlined, DownloadOutlined, FileTextOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Layout, Card, Upload, Button, message, Typography, Space, Row, Col, Statistic } from 'antd';
+import { UploadOutlined, InboxOutlined, DownloadOutlined, FileTextOutlined, FileOutlined, UserOutlined, DollarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Layout/Navbar';
 import uploadExcelFile from '../../services/upload.service';
+import payrollService from '../../services/payroll.service';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -13,6 +14,36 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [stats, setStats] = useState({
+    uploads: { total: 0 },
+    employees: { total: 0 },
+    disbursement: { total: 0 }
+  });
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    setLoadingStats(true);
+    try {
+      const response = await payrollService.getDashboardStats();
+      console.log('Dashboard stats response:', response);
+
+      // Handle nested response structure
+      if (response.success && response.data) {
+        setStats(response.data);
+      } else {
+        setStats(response);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      message.error('Failed to fetch dashboard statistics');
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   const requiredColumns = [
     'Employee ID',
@@ -67,6 +98,9 @@ const Dashboard = () => {
         }
 
         setFileList([]);
+
+        // Refresh stats after successful upload
+        fetchDashboardStats();
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -134,16 +168,54 @@ const Dashboard = () => {
     <Layout className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <Navbar />
       <Content className="p-6 md:p-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">
             <Title level={2} className="text-gray-800 mb-2">
-              Welcome to Payroll Management System
+              Welcome to Payorbit
             </Title>
             <Paragraph className="text-gray-600 text-lg">
               Upload your employee payroll Excel file to get started with processing
             </Paragraph>
           </div>
+
+          {/* Statistics Cards */}
+          <Row gutter={[24, 24]} className="mb-8">
+            <Col xs={24} sm={8}>
+              <Card className="shadow-lg rounded-xl border-0 hover:shadow-xl transition-shadow">
+                <Statistic
+                  title={<span className="text-gray-600 text-base">Total Uploads</span>}
+                  value={stats.uploads?.total || 0}
+                  prefix={<FileOutlined className="text-blue-600" />}
+                  valueStyle={{ color: '#2563eb', fontSize: '32px', fontWeight: 'bold' }}
+                  loading={loadingStats}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Card className="shadow-lg rounded-xl border-0 hover:shadow-xl transition-shadow">
+                <Statistic
+                  title={<span className="text-gray-600 text-base">Total Employees</span>}
+                  value={stats.employees?.total || 0}
+                  prefix={<UserOutlined className="text-green-600" />}
+                  valueStyle={{ color: '#16a34a', fontSize: '32px', fontWeight: 'bold' }}
+                  loading={loadingStats}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Card className="shadow-lg rounded-xl border-0 hover:shadow-xl transition-shadow">
+                <Statistic
+                  title={<span className="text-gray-600 text-base">Total Amount Processed</span>}
+                  value={stats.disbursement?.total || 0}
+                  prefix={<DollarOutlined className="text-purple-600" />}
+                  precision={2}
+                  valueStyle={{ color: '#9333ea', fontSize: '32px', fontWeight: 'bold' }}
+                  loading={loadingStats}
+                />
+              </Card>
+            </Col>
+          </Row>
 
           {/* Summary Button */}
           <div className="mb-6">

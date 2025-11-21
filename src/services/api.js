@@ -1,13 +1,10 @@
 import axios from 'axios';
 
-// TEMPORARY FIX: Use direct backend URL to avoid CSRF origin issues with proxy
-// Backend needs to add http://localhost:3000 to CSRF_TRUSTED_ORIGINS if using proxy
-const API_BASE_URL = 'https://app-a-p-p-adqaj.ondigitalocean.app/api';
+// Use environment variable for API URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://app-a-p-p-adqaj.ondigitalocean.app/api';
 
-// Original code (causes CSRF origin error with proxy):
-// const API_BASE_URL = process.env.NODE_ENV === 'development'
-//   ? '/api'
-//   : 'https://app-a-p-p-adqaj.ondigitalocean.app/api';
+console.log('API_BASE_URL:', API_BASE_URL);
+console.log('Environment:', process.env.NODE_ENV);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -25,9 +22,15 @@ api.interceptors.request.use(
     console.log('Token in localStorage:', token ? token.substring(0, 10) + '...' : 'No token');
     console.log('Request data type:', config.data instanceof FormData ? 'FormData' : typeof config.data);
 
-  
-    if (token) {
-      
+    // Skip adding Authorization header for login and register endpoints
+    const isAuthEndpoint =
+      config.url?.includes('/auth/login') ||
+      config.url?.includes('/auth/register');
+
+    if (isAuthEndpoint) {
+      console.log('Auth endpoint detected - skipping Authorization header');
+    } else if (token) {
+      // Add Authorization header only for non-auth endpoints
       const authPrefix = token.startsWith('eyJ') ? 'Bearer' : 'Token';
       config.headers.Authorization = `${authPrefix} ${token}`;
       console.log(`Authorization header added with ${authPrefix} prefix`);

@@ -7,12 +7,14 @@ const authService = {
       const payload = {
         username: userData.username,
         email: userData.email,
+        organization_name: userData.organization_name,
         first_name: userData.first_name,
         last_name: userData.last_name,
         password: userData.password,
         password2: userData.confirm_password,
       };
 
+      console.log('Registration payload:', payload);
       const response = await api.post('/auth/register/', payload);
       return response.data;
     } catch (error) {

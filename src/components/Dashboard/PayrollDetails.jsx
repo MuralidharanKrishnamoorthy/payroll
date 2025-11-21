@@ -23,7 +23,7 @@ const PayrollDetails = () => {
     setLoading(true);
     try {
       const response = await payrollService.getEmployeesByUploadId(uploadId);
-      console.log('Employee data:', response);
+      console.log('Employee data response:', response);
 
       // Handle different response formats
       let employeesList = [];
@@ -32,6 +32,7 @@ const PayrollDetails = () => {
       if (response.success && Array.isArray(response.data)) {
         employeesList = response.data;
         info = response.upload_info;
+        console.log('Parsed employees:', employeesList);
       } else if (Array.isArray(response)) {
         employeesList = response;
       } else if (response.results && Array.isArray(response.results)) {
@@ -39,6 +40,10 @@ const PayrollDetails = () => {
       } else if (response.employees && Array.isArray(response.employees)) {
         employeesList = response.employees;
         info = response.upload_info;
+      }
+
+      if (employeesList.length === 0) {
+        message.warning('No employee data found');
       }
 
       setEmployees(employeesList);
@@ -53,19 +58,30 @@ const PayrollDetails = () => {
 
   const handleDownloadRow = async (employee) => {
     try {
-      message.loading({ content: 'Downloading employee data...', key: 'download-row' });
+      message.loading({ content: 'Preparing download...', key: 'download-row' });
 
-      // Create CSV data for single employee
-      const headers = Object.keys(employee).join(',');
-      const values = Object.values(employee).join(',');
-      const csvContent = `${headers}\n${values}`;
+      // Call export API
+      const response = await payrollService.exportEmployee(employee.id, 'excel');
 
-      // Create download link
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      // Get filename from response headers or use default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `employee_${employee.employee_id}_payroll.xlsx`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Create download link from blob
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `employee_${employee.id || employee.employee_id}_payroll.csv`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -74,43 +90,141 @@ const PayrollDetails = () => {
       message.success({ content: 'Download completed!', key: 'download-row' });
     } catch (error) {
       console.error('Download error:', error);
-      message.error({ content: 'Failed to download', key: 'download-row' });
+      message.error({ content: 'Failed to download. Please try again.', key: 'download-row' });
     }
   };
 
-  // Dynamically generate columns based on employee data
+  // Generate columns for employee data with nested salary
   const generateColumns = () => {
     if (employees.length === 0) return [];
 
-    const firstEmployee = employees[0];
-    const dataColumns = Object.keys(firstEmployee).map((key) => ({
-      title: key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-      dataIndex: key,
-      key: key,
-      render: (text) => (
-        <span className="text-gray-800">{text !== null && text !== undefined ? text : '-'}</span>
-      ),
-    }));
+    const columns = [
+      {
+        title: 'Employee ID',
+        dataIndex: 'employee_id',
+        key: 'employee_id',
+        fixed: 'left',
+        width: 120,
+        render: (text) => <span className="font-semibold text-blue-600">{text || '-'}</span>,
+      },
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        fixed: 'left',
+        width: 150,
+        render: (text) => <span className="font-semibold text-gray-800">{text || '-'}</span>,
+      },
+      {
+        title: 'Email',
+        dataIndex: 'email',
+        key: 'email',
+        width: 200,
+        render: (text) => <span className="text-gray-700">{text || '-'}</span>,
+      },
+      {
+        title: 'Department',
+        dataIndex: 'department',
+        key: 'department',
+        width: 130,
+        render: (text) => <span className="text-gray-700">{text || '-'}</span>,
+      },
+      {
+        title: 'Designation',
+        dataIndex: 'designation',
+        key: 'designation',
+        width: 150,
+        render: (text) => <span className="text-gray-700">{text || '-'}</span>,
+      },
+      {
+        title: 'Basic Pay',
+        dataIndex: ['salary', 'basic_pay'],
+        key: 'basic_pay',
+        width: 120,
+        render: (text) => <span className="text-gray-800">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'HRA',
+        dataIndex: ['salary', 'hra'],
+        key: 'hra',
+        width: 100,
+        render: (text) => <span className="text-gray-800">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Variable Pay',
+        dataIndex: ['salary', 'variable_pay'],
+        key: 'variable_pay',
+        width: 120,
+        render: (text) => <span className="text-gray-800">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Allowances',
+        dataIndex: ['salary', 'other_allowances'],
+        key: 'other_allowances',
+        width: 120,
+        render: (text) => <span className="text-gray-800">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Gross Salary',
+        dataIndex: ['salary', 'gross_salary'],
+        key: 'gross_salary',
+        width: 130,
+        render: (text) => <span className="font-semibold text-green-600">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'PF',
+        dataIndex: ['salary', 'provident_fund'],
+        key: 'provident_fund',
+        width: 100,
+        render: (text) => <span className="text-red-600">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Income Tax',
+        dataIndex: ['salary', 'income_tax'],
+        key: 'income_tax',
+        width: 120,
+        render: (text) => <span className="text-red-600">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Total Deductions',
+        dataIndex: ['salary', 'total_deductions'],
+        key: 'total_deductions',
+        width: 150,
+        render: (text) => <span className="font-semibold text-red-600">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Net Salary',
+        dataIndex: ['salary', 'net_salary'],
+        key: 'net_salary',
+        width: 130,
+        render: (text) => <span className="font-bold text-green-700">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Take Home Pay',
+        dataIndex: ['salary', 'take_home_pay'],
+        key: 'take_home_pay',
+        width: 150,
+        render: (text) => <span className="font-bold text-blue-700">₹{text || '0.00'}</span>,
+      },
+      {
+        title: 'Download',
+        key: 'download',
+        align: 'center',
+        fixed: 'right',
+        width: 120,
+        render: (_, record) => (
+          <Button
+            type="default"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownloadRow(record)}
+            size="small"
+            className="border-2 border-green-600 text-green-600 hover:bg-green-50"
+          />
+        ),
+      },
+    ];
 
-    // Add download column at the end
-    dataColumns.push({
-      title: 'Download',
-      key: 'download',
-      align: 'center',
-      fixed: 'right',
-      width: 120,
-      render: (_, record) => (
-        <Button
-          type="default"
-          icon={<DownloadOutlined />}
-          onClick={() => handleDownloadRow(record)}
-          size="small"
-          className="border-2 border-green-600 text-green-600 hover:bg-green-50"
-        />
-      ),
-    });
-
-    return dataColumns;
+    return columns;
   };
 
   return (

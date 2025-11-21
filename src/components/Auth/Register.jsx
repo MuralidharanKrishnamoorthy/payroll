@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { UserOutlined, MailOutlined, LockOutlined, IdcardOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, LockOutlined, IdcardOutlined, BankOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service';
 import authIllustration from '../../assets/images/auth-illustration.png';
+import payorbitLogo from '../../assets/images/payorbit.png';
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -70,25 +71,21 @@ const Register = () => {
           <img
             src={authIllustration}
             alt="Payroll Management"
-            className="w-full h-auto max-w-3xl mx-auto mb-8"
+            className="w-full h-auto max-w-3xl mx-auto"
           />
-          <h2 className="text-4xl font-bold text-blue-600 mb-4">
-            Join Our Platform
-          </h2>
-          <p className="text-blue-600 text-lg">
-            Create your account and start managing payroll efficiently
-          </p>
         </div>
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-start lg:pl-16 p-8 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex items-start justify-start lg:pl-16 p-8 overflow-y-auto max-h-screen">
         <div className="w-full max-w-lg">
           {/* Logo/Header */}
-          <div className="mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-6 shadow-lg">
-              <span className="text-white text-3xl font-bold">P</span>
-            </div>
+          <div className="mb-8">
+            <img
+              src={payorbitLogo}
+              alt="Payorbit Logo"
+              className="w-32 h-32 mb-6 object-contain"
+            />
             <h1 className="text-4xl font-bold text-gray-800 mb-3">
               Create Account
             </h1>
@@ -129,6 +126,19 @@ const Register = () => {
               <Input
                 prefix={<MailOutlined className="text-gray-400 text-lg" />}
                 placeholder="Email"
+                className="rounded-lg h-14 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="organization_name"
+              rules={[
+                { required: true, message: 'Please input your organization name!' }
+              ]}
+            >
+              <Input
+                prefix={<BankOutlined className="text-gray-400 text-lg" />}
+                placeholder="Organization Name"
                 className="rounded-lg h-14 text-base"
               />
             </Form.Item>

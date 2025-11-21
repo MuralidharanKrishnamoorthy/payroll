@@ -3,6 +3,7 @@ import { Layout, Button, Space, Avatar, message } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service';
+import payorbitLogo from '../../assets/images/payorbit.png';
 
 const { Header } = Layout;
 
@@ -53,19 +54,24 @@ const Navbar = () => {
       <div className="flex items-center gap-3">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg">
-            <span className="text-white text-3xl font-bold">P</span>
-          </div>
+          <img
+            src={payorbitLogo}
+            alt="Payorbit Logo"
+            className="w-16 h-16 object-contain"
+          />
           <h1 className="text-2xl font-bold text-gray-800 hidden md:block">
-            Payroll Management
+            Payorbit
           </h1>
         </div>
       </div>
 
       {/* User Info & Logout */}
       <div className="flex items-center gap-4">
-        {/* User Info Display */}
-        <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg">
+        {/* User Info Display - Clickable */}
+        <div
+          onClick={() => navigate('/profile')}
+          className="flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors duration-200"
+        >
           <Avatar
             style={{
               backgroundColor: '#2563eb',
@@ -76,7 +82,7 @@ const Navbar = () => {
             {getUserInitials()}
           </Avatar>
           <div className="hidden md:block">
-            <div className="text-gray-800 font-semibold text-base">
+            <div className="text-gray-800 font-semibold text-base hover:text-blue-600 transition-colors">
               {getUserDisplayName()}
             </div>
             <div className="text-gray-500 text-sm">

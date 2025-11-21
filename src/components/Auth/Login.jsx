@@ -4,6 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.service';
 import authIllustration from '../../assets/images/auth-illustration.png';
+import payorbitLogo from '../../assets/images/payorbit.png';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -60,25 +61,21 @@ const Login = () => {
           <img
             src={authIllustration}
             alt="Payroll Management"
-            className="w-full h-auto max-w-3xl mx-auto mb-8"
+            className="w-full h-auto max-w-3xl mx-auto"
           />
-          <h2 className="text-4xl font-bold text-blue-600 mb-4">
-            Welcome to Payroll Management
-          </h2>
-          <p className="text-blue-600 text-lg">
-            Streamline your payroll processes with our comprehensive management system
-          </p>
         </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-start lg:pl-16 p-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-start lg:pl-16 p-8 overflow-hidden">
         <div className="w-full max-w-lg">
           {/* Logo/Header */}
           <div className="mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-6 shadow-lg">
-              <span className="text-white text-3xl font-bold">P</span>
-            </div>
+            <img
+              src={payorbitLogo}
+              alt="Payorbit Logo"
+              className="w-32 h-32 mb-6 object-contain"
+            />
             <h1 className="text-4xl font-bold text-gray-800 mb-3">
               Welcome Back!
             </h1>

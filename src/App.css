@@ -40,6 +40,16 @@
   background: #555;
 }
 
+/* Remove extended dashed lines from Upload Dragger */
+.ant-upload-drag::before,
+.ant-upload-drag::after {
+  display: none !important;
+}
+
+.ant-upload.ant-upload-drag {
+  border-radius: 12px;
+}
+
 /* Responsive utilities */
 @media (max-width: 1024px) {
   .ant-input-affix-wrapper {
